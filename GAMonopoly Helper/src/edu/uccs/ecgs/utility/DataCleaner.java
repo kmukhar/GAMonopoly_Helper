@@ -2,17 +2,21 @@ package edu.uccs.ecgs.utility;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.ArrayList;
-import com.mukhar.commons.LineDataReader;
+import java.util.List;
 
 public class DataCleaner {
   public static void main(String[] args) {
-    File data = new File("D:/Documents and Data/workspace/GAMonopoly Helper/src/edu/uccs/ecgs/utility/dir.txt");
-    LineDataReader ldr = new LineDataReader();
-    ldr.openFile(data);
-    ArrayList<String> datanames = ldr.readFile(2048);
-    ldr.closeFile();
+    Path path = FileSystems.getDefault().getPath("D:/Documents and Data",
+        "workspace", "GAMonopoly Helper/src/edu/uccs/ecgs/utility/dir.txt");
+    List<String> datanames = new ArrayList<String>();
+    try {
+      datanames = Files.readAllLines(path, Charset.defaultCharset());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     for (String dataname : datanames) {
       System.out.println("Cleaning " + dataname);
       cleanFiles(dataname);
@@ -29,18 +33,24 @@ public class DataCleaner {
       String pfName = dir.getAbsolutePath() + "/player_fitness.csv";
       String absPath = dir.getAbsolutePath();
       generation = absPath.substring(absPath.length() - 4);
-      File pfFile = new File(pfName);
-      LineDataReader ldr = new LineDataReader();
-      ldr.openFile(pfFile);
-      ArrayList<String> vals = ldr.readFile(2048);
-      ldr.closeFile();
-      String lastLine = vals.get(vals.size() - 1);
-      String[] score_id = lastLine.split(",");
-      idToSave = score_id[1];
-      StringBuilder sb = new StringBuilder(idToSave);
-      while (sb.length() < 4)
-        sb.insert(0, '0');
-      idToSave = sb.toString();
+
+      Path path = FileSystems.getDefault().getPath(pfName);
+      List<String> vals = new ArrayList<String>();
+      try {
+        vals = Files.readAllLines(path, Charset.defaultCharset());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      if (vals.size() > 0) {
+        String lastLine = vals.get(vals.size() - 1);
+        String[] score_id = lastLine.split(",");
+        idToSave = score_id[1];
+        StringBuilder sb = new StringBuilder(idToSave);
+        while (sb.length() < 4)
+          sb.insert(0, '0');
+        idToSave = sb.toString();
+      }
     }
     
     String[] files = dir.list();

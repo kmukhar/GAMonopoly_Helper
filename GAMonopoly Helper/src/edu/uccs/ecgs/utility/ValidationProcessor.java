@@ -1,22 +1,25 @@
 package edu.uccs.ecgs.utility;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.*;
 import java.util.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import com.mukhar.commons.FilePicker;
-import com.mukhar.commons.LineDataReader;
 
 public class ValidationProcessor {
   public static void main(String[] args)
   {
     ValidationProcessor processor = new ValidationProcessor();
 
-    File data = new File(
-        "D:/Documents and Data/workspace/GAMonopoly Helper/src/edu/uccs/ecgs/utility/basedirs.txt");
-    LineDataReader ldr = new LineDataReader();
-    ldr.openFile(data);
-    ArrayList<String> datanames = ldr.readFile(2048);
-    ldr.closeFile();
+    Path path = FileSystems.getDefault().getPath("D:/Documents and Data",
+        "workspace/GAMonopoly Helper/src/edu/uccs/ecgs/utility/basedirs.txt");
+    List<String> datanames = new ArrayList<String>();
+    try {
+      datanames = Files.readAllLines(path, Charset.defaultCharset());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
     for (String dataname : datanames) {
       File file = new File(dataname);
       processor.processData(file);
@@ -42,9 +45,16 @@ public class ValidationProcessor {
       } else {
         // otherwise, if it's name is player.fitness, then get its data
         if (file.getName().matches("player_fitness.csv")) {
-          LineDataReader r = new LineDataReader();
-          r.openFile(file);
-          ArrayList<String> result = r.readFile(5);
+          
+          Path path = FileSystems.getDefault().getPath(file.getAbsolutePath());
+          List<String> result = new ArrayList<String>();
+          try {
+            result = Files.readAllLines(path,
+                Charset.defaultCharset());
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+
           for (String s : result) {
             String[] vals = s.split(",");
             // but only process the line if it has numbers
