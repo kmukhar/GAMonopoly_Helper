@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/Users/kmukhar/My Applications/poi-3.8/poi-3.8-20120326.jar"/>
 	<classpathentry kind="lib" path="C:/Users/kmukhar/My Applications/poi-3.8/poi-ooxml-3.8-20120326.jar"/>
 	<classpathentry kind="lib" path="C:/Users/kmukhar/My Applications/poi-3.8/poi-ooxml-schemas-3.8-20120326.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kmukhar/My Applications/xmlbeans-2.5.0/lib/xbean.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

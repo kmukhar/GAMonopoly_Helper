@@ -6,8 +6,6 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.uccs.ecgs.utility.DirCleaner.DirActions;
-
 public class DataCleaner
 {
   public static void main(String[] args)

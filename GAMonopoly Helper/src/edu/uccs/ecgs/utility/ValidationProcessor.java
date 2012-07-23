@@ -11,9 +11,9 @@ public class ValidationProcessor {
   {
     ValidationProcessor processor = new ValidationProcessor();
 
-    Path path = FileSystems.getDefault().getPath("D:/Documents and Data",
-        "Kevin/git/GAMonopoly_Helper/GAMonopoly Helper/src/edu/uccs",
-        "ecgs/utility/basedirs.txt");
+    Path path = FileSystems.getDefault().getPath("C:/Users/kmukhar/workspace",
+        "GAMonopoly_Helper/GAMonopoly Helper",
+        "src/edu/uccs/ecgs/utility/basedirs.txt");
     List<String> datanames = new ArrayList<String>();
     try {
       datanames = Files.readAllLines(path, Charset.defaultCharset());
@@ -84,7 +84,7 @@ public class ValidationProcessor {
   }
   
   private void dumpScores(File basedir, TreeMap<Integer, ArrayList<Integer>> allScores) {
-    File file = new File("D:/Documents and Data/Kevin/git/"
+    File file = new File("C:/Users/kmukhar/workspace/"
         + "GAMonopoly_Helper/GAMonopoly Helper/src/edu/uccs/ecgs/"
         + "utility/allscores.xlsx");
     SpreadSheet ss = new SpreadSheet();
