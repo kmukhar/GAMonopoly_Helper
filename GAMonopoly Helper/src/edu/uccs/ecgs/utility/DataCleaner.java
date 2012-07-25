@@ -6,13 +6,16 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.uccs.ecgs.utility.DirCleaner.DirActions;
+
 public class DataCleaner
 {
   public static void main(String[] args)
   {
     // read a data file that contains a list of all the directories to clean
-    Path path = FileSystems.getDefault().getPath("D:/Documents and Data",
-        "workspace", "GAMonopoly Helper/src/edu/uccs/ecgs/utility/dir.txt");
+    Path path = FileSystems.getDefault().getPath("C:/Users/kmukhar/workspace",
+        "GAMonopoly_Helper/GAMonopoly Helper/src",
+        "edu/uccs/ecgs/utility/dir.txt");
     List<String> datanames = new ArrayList<String>();
     try {
       datanames = Files.readAllLines(path, Charset.defaultCharset());
@@ -62,6 +65,8 @@ public class DataCleaner
           sb.insert(0, '0');
         idToSave = sb.toString();
       }
+    } else if (dirName.endsWith("00000")) {
+      DirCleaner.deleteFilesInPath(path, new ArrayList<Path>(), DirActions.SAVE_DIR);
     }
 
     // get a path to the data file we are saving
