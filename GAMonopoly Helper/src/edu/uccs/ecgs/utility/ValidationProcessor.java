@@ -6,14 +6,17 @@ import java.nio.file.*;
 import java.util.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-public class ValidationProcessor {
+public class ValidationProcessor
+{
   public static void main(String[] args)
   {
     ValidationProcessor processor = new ValidationProcessor();
 
-    Path path = FileSystems.getDefault().getPath("C:/Users/kmukhar/workspace",
-        "GAMonopoly_Helper/GAMonopoly Helper",
-        "src/edu/uccs/ecgs/utility/basedirs.txt");
+    Path path = FileSystems.getDefault().getPath(".");
+    path = path.toAbsolutePath().getParent();
+    path = path.resolve("GAMonopoly Helper/src/edu/uccs/ecgs/utility");
+    path = path.resolve("basedirs.txt");
+
     List<String> datanames = new ArrayList<String>();
     try {
       datanames = Files.readAllLines(path, Charset.defaultCharset());
@@ -36,22 +39,21 @@ public class ValidationProcessor {
     addAll(fileList, basedir.getAbsolutePath(), files);
 
     while (files.size() > 0) {
-      //get the first file name off the list
+      // get the first file name off the list
       String fname = files.remove(0);
       File file = new File(fname);
 
       if (file.isDirectory()) {
-        //if it's a directory, add all its files to list
+        // if it's a directory, add all its files to list
         addAll(file.list(), file.getAbsolutePath(), files);
       } else {
         // otherwise, if it's name is player.fitness, then get its data
         if (file.getName().matches("player_fitness.csv")) {
-          
+
           Path path = FileSystems.getDefault().getPath(file.getAbsolutePath());
           List<String> result = new ArrayList<String>();
           try {
-            result = Files.readAllLines(path,
-                Charset.defaultCharset());
+            result = Files.readAllLines(path, Charset.defaultCharset());
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -82,11 +84,26 @@ public class ValidationProcessor {
       files.add(basedir + "/" + name);
     }
   }
-  
-  private void dumpScores(File basedir, TreeMap<Integer, ArrayList<Integer>> allScores) {
-    File file = new File("C:/Users/kmukhar/workspace/"
-        + "GAMonopoly_Helper/GAMonopoly Helper/src/edu/uccs/ecgs/"
-        + "utility/allscores.xlsx");
+
+  private void dumpScores(File basedir,
+      TreeMap<Integer, ArrayList<Integer>> allScores)
+  {
+    Path path = FileSystems.getDefault().getPath(".");
+    path = path.toAbsolutePath().getParent();
+    path = path.resolve("GAMonopoly Helper/src/edu/uccs/ecgs/utility");
+
+    Path sourcePath = FileSystems.getDefault().getPath(
+        basedir.getAbsolutePath());
+    sourcePath = sourcePath.getParent().getParent().getFileName();
+
+    if (sourcePath.toString().endsWith("finish_order")) {
+      path = path.resolve("allscores_finish_order.xlsx");
+    } else {
+      path = path.resolve("allscores_num_wins.xlsx");
+    }
+
+    File file = path.toFile();
+
     SpreadSheet ss = new SpreadSheet();
     try {
       ss.writeData(file, allScores, basedir.getAbsolutePath());
