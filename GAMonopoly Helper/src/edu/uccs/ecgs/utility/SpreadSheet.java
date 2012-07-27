@@ -66,9 +66,10 @@ public class SpreadSheet {
     Path path = FileSystems.getDefault().getPath(basedir);
     String fit = path.getFileName().toString();
     String chromo = path.getParent().getFileName().toString();
-    String nm = path.getParent().getParent().getFileName().toString();
-    
-    path = path.resolve("allscores_" + nm.substring(0, 4) + "_" + chromo + "_"
+    String nm = path.getParent().getParent().getParent().getFileName().toString();
+    nm = "n" + nm.substring(nm.length() - 3);
+
+    path = path.resolve("allscores_" + nm + "_" + chromo + "_"
         + fit + ".xlsx");
 
     System.out.println("Writing file " + path.toString());
