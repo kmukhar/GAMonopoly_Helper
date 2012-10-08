@@ -25,12 +25,12 @@ public class DataCleaner
 
     // process each directory
     for (String dataname : datanames) {
-      System.out.println("Cleaning " + dataname);
-      cleanFiles(dataname);
+      System.out.println("Processing " + dataname);
+      processFiles(dataname);
     }
   }
 
-  public static void cleanFiles(String dirName)
+  public static void processFiles(String dirName)
   {
     Path path = FileSystems.getDefault().getPath(dirName);
 
