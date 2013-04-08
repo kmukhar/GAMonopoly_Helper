@@ -45,13 +45,17 @@ public class PlayerFitnessHistogrammer
       String fname = files.remove(0);
       File file = new File(fname);
 
-      // otherwise, if it's name is player.fitness, then get its data
-      if (file.getName().matches("player_fitness.csv")) {
+      if (file.isDirectory()) {
+        fileList = file.list();
+        addAll(fileList, file.getAbsolutePath(), files);
+
+      } else if (file.getName().matches("player_fitness.csv")) {
+        // otherwise, if it's name is player.fitness, then get its data
         Path path = FileSystems.getDefault().getPath(file.getAbsolutePath());
         List<String> result = new ArrayList<String>();
         try {
           result = Files.readAllLines(path, Charset.defaultCharset());
-          dumpScores(basedir, result);
+          dumpScores(file, result);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -71,7 +75,8 @@ public class PlayerFitnessHistogrammer
   {
     Path sourcePath = FileSystems.getDefault().getPath(
         basedir.getAbsolutePath());
-    Path path = sourcePath.getParent().resolve("player_fitness.xlsx");
+    Path path = sourcePath.getParent().getParent().getParent().getParent()
+        .getParent().resolve("player_fitness.xlsx");
 
     File file = path.toFile();
 
@@ -99,6 +104,13 @@ class SpreadSheet2 {
 
     for (String s : data) {
       String[] vals = s.split(",");
+      
+      if (vals.length < 2) {
+        System.out.println("file: "+file.getAbsolutePath());
+        System.out.println("[" + s + "]");
+        continue;
+      }
+
       // but only process the line if it has numbers
       if (vals[0].matches("\\d*")) {
         Integer score = Integer.parseInt(vals[0]);
@@ -130,20 +142,50 @@ class SpreadSheet2 {
     
     // Write the output to a file
     Path path = FileSystems.getDefault().getPath(basedir);
-    path = path.resolve("player_fitness.xlsx");
+    path = path.getParent().resolve("player_fitness.xlsx");
 
     sheet = wb.getSheetAt(0);
-    Cell cell = sheet.getRow(1026).getCell(1);
+    ++rowIndex;
+    // path to data
+//    System.out.print(path.toString()+"\n");
+
+    // output the population
+    String[] elems = path.toString().split("\\\\");
+    String population = elems[7] + "-" + elems[5].substring(1, 5) + "-"
+        + elems[5].substring(7, 10);
+    if (elems[8].equalsIgnoreCase("finish_order")) {
+      population += "-FO";
+    } else if (elems[8].equalsIgnoreCase("finish_order")) {
+      population += "-FO";
+    } else if (elems[8].equalsIgnoreCase("net_worth")) {
+      population += "-NetW";
+    } else if (elems[8].equalsIgnoreCase("num_monopolies")) {
+      population += "-NM";
+    } else if (elems[8].equalsIgnoreCase("num_properties")) {
+      population += "-NP";
+    } else if (elems[8].equalsIgnoreCase("num_wins")) {
+      population += "-NW";
+    } else {
+      System.out.println("STOP");
+      System.exit(-1);
+    }
+    System.out.print(population + "," + elems[9].substring(11, 16) + ",");
+    
+    // min
+    Cell cell = sheet.getRow(rowIndex++).getCell(1);
     System.out.print(cell.getNumericCellValue()+",");
-    cell = sheet.getRow(1027).getCell(1);
+    //max
+    cell = sheet.getRow(rowIndex++).getCell(1);
     System.out.print(cell.getNumericCellValue()+",");
-    cell = sheet.getRow(1028).getCell(1);
+    // average
+    cell = sheet.getRow(rowIndex++).getCell(1);
     System.out.print(cell.getNumericCellValue()+",");
-    cell = sheet.getRow(1029).getCell(1);
+    // variance
+    cell = sheet.getRow(rowIndex++).getCell(1);
     System.out.print(cell.getNumericCellValue()+",");
-    cell = sheet.getRow(1030).getCell(1);
-    System.out.print(cell.getNumericCellValue()+",");
-    System.out.println(path.toString());
+    // std dev
+    cell = sheet.getRow(rowIndex++).getCell(1);
+    System.out.println(cell.getNumericCellValue());
 
     File outfile = path.toFile();
     FileOutputStream fileOut = new FileOutputStream(outfile);
