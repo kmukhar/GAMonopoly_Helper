@@ -10,3 +10,5 @@ poi
 poi-ooxml
 
 poi-ooxml-schemas
+
+xbeans
