@@ -4,6 +4,9 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.*;
+
+import javax.swing.JFileChooser;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class ValidationProcessor
@@ -12,17 +15,31 @@ public class ValidationProcessor
   {
     ValidationProcessor processor = new ValidationProcessor();
 
-    Path path = FileSystems.getDefault().getPath(".");
-    path = path.toAbsolutePath().getParent();
-    path = path.resolve("GAMonopoly Helper/src/edu/uccs/ecgs/utility");
-    path = path.resolve("basedirs.txt");
-
-    List<String> datanames = new ArrayList<String>();
-    try {
-      datanames = Files.readAllLines(path, Charset.defaultCharset());
-    } catch (IOException e) {
-      e.printStackTrace();
+    JFileChooser fc = new JFileChooser("C:/Users/kmukhar/Documents/Validation/RGA");
+    fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    int result = fc.showOpenDialog(null);
+    if (result != JFileChooser.APPROVE_OPTION) {
+      System.exit(0);
     }
+
+    File f = fc.getSelectedFile();
+    List<String> datanames = new ArrayList<String>();
+    Path path = null;
+    
+    if (f.isDirectory()) {
+      datanames.add(f.getPath());
+    } else { 
+      path = FileSystems.getDefault().getPath(".");
+      path = path.toAbsolutePath().getParent();
+      path = path.resolve("GAMonopoly Helper/src/edu/uccs/ecgs/utility");
+      path = path.resolve("basedirs.txt");
+      try {
+        datanames = Files.readAllLines(path, Charset.defaultCharset());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
 
     for (String dataname : datanames) {
       File file = new File(dataname);
@@ -63,7 +80,7 @@ public class ValidationProcessor
             // but only process the line if it has numbers
             if (vals[0].matches("\\d*")) {
               Integer score = Integer.parseInt(vals[0]);
-              Integer playerID = Integer.parseInt(vals[1]);
+              Integer playerID = Integer.parseInt(vals[1].replaceAll("Player ", ""));
               ArrayList<Integer> playerscore = allScores.get(playerID);
               if (playerscore == null) {
                 playerscore = new ArrayList<Integer>();
@@ -94,12 +111,16 @@ public class ValidationProcessor
 
     Path sourcePath = FileSystems.getDefault().getPath(
         basedir.getAbsolutePath());
-    sourcePath = sourcePath.getParent().getParent().getFileName();
+    int indexFO = sourcePath.toString().indexOf("finish_order");
+    int indexNW = sourcePath.toString().indexOf("num_wins");
 
-    if (sourcePath.toString().endsWith("finish_order")) {
+    if (indexFO >= 0) {
       path = path.resolve("allscores_finish_order.xlsx");
-    } else {
+    } else if (indexNW >= 0) {
       path = path.resolve("allscores_num_wins.xlsx");
+    } else {
+      System.out.println("Unable to determine correct fit evalator from dir name");
+      return;
     }
 
     File file = path.toFile();

@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.TreeMap;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
@@ -25,24 +26,29 @@ public class SpreadSheet {
     int rowIndex = 1;
     int index = 0;
 
-    ArrayList<Integer> g250 = allScores.get(250);
-    ArrayList<Integer> g500 = allScores.get(500);
-    ArrayList<Integer> g750 = allScores.get(750);
-    ArrayList<Integer> g999 = allScores.get(999);
+    Iterator<Integer> keys = allScores.keySet().iterator();
+    ArrayList<ArrayList<Integer>> scores = new ArrayList<ArrayList<Integer>>();
+    Row row = sheet.getRow(0);
+    while (keys.hasNext()) {
+      Integer key = keys.next();
+      row.getCell(scores.size()).setCellValue(key.intValue());
+      ArrayList<Integer> vals = allScores.get(key);
+      scores.add(vals);
+    }
 
-    for (Integer val : g250) {
-      Row row = sheet.getRow(rowIndex);
+    for (Integer val : scores.get(0)) {
+      row = sheet.getRow(rowIndex);
       Cell cell250 = row.getCell(0);
-      cell250.setCellValue(g250.get(index));
+      cell250.setCellValue(scores.get(0).get(index));
 
       Cell cell500 = row.getCell(1);
-      cell500.setCellValue(g500.get(index));
+      cell500.setCellValue(scores.get(1).get(index));
 
       Cell cell750 = row.getCell(2);
-      cell750.setCellValue(g750.get(index));
+      cell750.setCellValue(scores.get(2).get(index));
       
       Cell cell999 = row.getCell(3);
-      cell999.setCellValue(g999.get(index));
+      cell999.setCellValue(scores.get(3).get(index));
 
       ++index;
       ++rowIndex;
