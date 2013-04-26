@@ -44,13 +44,40 @@ public class ResultParser {
       while (line != null) {
         if (line.trim().startsWith("BEGIN")) {
           for (int i = 0; i < 4; i++) {
-            line = br.readLine();
+            line = br.readLine().trim();
             bw.write(line);
             System.out.println(line);
             bw.write(lf);
           }
           bw.write(lf);
           System.out.println();
+          break;
+        } else if (line.trim().contains("BEGIN")) {
+          StringBuilder sb = new StringBuilder(line);
+          do {
+            line = br.readLine();
+            sb.append(line);
+          } while (!line.contains("END"));
+
+          String strSb = sb.toString();
+          strSb = strSb.trim().replaceAll("=0A", lf).replaceAll("=A0", lf);
+          strSb = strSb.replaceAll("=", "");
+          String[] lines = strSb.split(lf);
+
+          int count = 0;
+          for (String s : lines) {
+            if (s.contains("BEGIN"))
+              continue;
+
+            bw.write(s);
+            bw.write(lf);
+            System.out.println(s);
+            count++;
+            if (count == 5)
+              break;
+          }
+
+          break;
         }
         line = br.readLine();
       }
